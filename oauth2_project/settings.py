@@ -39,12 +39,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'corsheaders',
     'OAuth2',
 ]
 # Custom user model
 AUTH_USER_MODEL = "OAuth2.AppUser"
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -52,7 +54,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    
 ]
 
 ROOT_URLCONF = 'oauth2_project.urls'
@@ -132,3 +133,31 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 DEFAULT_FROM_EMAIL = "no-reply@oauth2.local"
+
+# Permitir peticiones desde tu servidor de desarrollo frontend
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5500",
+    "http://127.0.0.1:5500",
+    "http://localhost:3000", # Por si luego usas React/Next.js
+]
+
+# Si vas a manejar sesiones (cookies) entre frontend y backend
+CORS_ALLOW_CREDENTIALS = True
+
+# Opcional: Si quieres permitir todos los dominios solo para pruebas rápidas
+# CORS_ALLOW_ALL_ORIGINS = True
+
+
+# Añade esto para que DRF sepa cómo manejar la autenticación en un entorno desacoplado
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
+}
+
+# Configuración de Email (Para ver el código MFA)
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
